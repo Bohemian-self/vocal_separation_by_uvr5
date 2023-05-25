@@ -10,8 +10,8 @@ from lib_v5.model_param_init import ModelParameters
 
 
 class  _audio_pre_():
-    def __init__(self, model_path = '/home/nr/uvr5/models/Main_Models/2_HP-UVR.pth',
-                                device='cpu',**keys):
+    def __init__(self, model_path = '/kaggle/working/vocal_separation_by_uvr5/models/Vocal_HP_4BAND_3090.pth',
+                                device='cuda',**keys):
         self.model_path = model_path
         self.device = device
         self.data = {
@@ -19,7 +19,7 @@ class  _audio_pre_():
             'postprocess': True,
             'tta': True,
             # Constants
-            'window_size': 512,
+            'window_size': 272,
             'agg': 10,
             'high_end_process': 'mirroring',
         }
@@ -40,7 +40,7 @@ class  _audio_pre_():
         param_name ,model_params_d = _get_name_params(model_path , model_hash)
         mp = ModelParameters(model_params_d)
         model = nets.CascadedASPPNet(mp.param['bins'] * 2)
-        cpk = torch.load( model_path , map_location='cpu')  
+        cpk = torch.load( model_path , map_location='cuda')  
         model.load_state_dict(cpk)
         model.eval()
         model = model.to(device)
@@ -116,13 +116,13 @@ class  _audio_pre_():
         return wav_instrument , wav_vocals
 
 if __name__ == '__main__':
-    device = 'cpu'
+    device = 'cuda'
     pre_fun = _audio_pre_(
         device=device,
-        model_path = './models/Main_Models/2_HP-UVR.pth',
+        model_path = '/kaggle/working/vocal_separation_by_uvr5/models/Vocal_HP_4BAND_3090.pth',
                         )
-    audio_path = './dengziqi/句号.m4a'
-    save_path = './dengziqi/pre_datas'
+    audio_path = '/kaggle/input/02-vocals/02_JP.wav'
+    save_path = '/kaggle/working/vocal_separation_by_uvr5/'
     in_data , vo_data = pre_fun._path_audio_(audio_path , save_path)
 
 
